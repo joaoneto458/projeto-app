@@ -1,0 +1,331 @@
+:root {
+  --primary: #007BDB;
+  --primary-dark: #005bb5;
+  --light: #f4f4f4;
+  --dark: #1f1f1f;
+  --accent: #ffffff;
+  --success: #28a745;
+  --danger: #dc3545;
+  --warning: #ffc107;
+  --radius: 12px;
+  --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  --font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font);
+  background: linear-gradient(135deg, #4e9af1, #007bdb);
+  color: var(--accent);
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Tela de boas-vindas */
+#welcome {
+  position: fixed;
+  inset: 0;
+  background: var(--primary);
+  color: var(--accent);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.8s ease;
+}
+
+#welcome.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#welcome .logo {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 5px #0e62be);
+}
+
+#welcome h1 {
+  font-size: 2rem;
+  text-align: center;
+}
+
+/* App container */
+.app {
+  background: var(--accent);
+  color: var(--dark);
+  border-radius: var(--radius);
+  width: 380px;
+  max-width: 100%;
+  padding: 25px;
+  box-shadow: var(--shadow);
+  animation: fadeInApp 0.6s ease forwards;
+}
+
+.app.hidden {
+  display: none;
+}
+
+/* Header */
+header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+#logo {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+header h1 {
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 1.8rem;
+}
+
+/* Task Panel */
+.task-panel h2 {
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: var(--primary);
+  font-size: 1.5rem;
+}
+
+/* Sugestões */
+.suggestions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.suggestions button {
+  background: var(--primary);
+  color: var(--accent);
+  border: none;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+  flex: 1 1 auto;
+  min-width: 80px;
+  text-align: center;
+}
+
+.suggestions button:hover {
+  background: var(--primary-dark);
+}
+
+/* Formulário */
+#task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+#task-form input[type="text"],
+#task-form input[type="date"] {
+  padding: 10px 14px;
+  font-size: 1rem;
+  border-radius: var(--radius);
+  border: 1.5px solid #ccc;
+  transition: border-color 0.3s ease;
+  font-weight: 500;
+}
+
+#task-form input[type="text"]:focus,
+#task-form input[type="date"]:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 5px var(--primary);
+}
+
+#task-form button {
+  padding: 12px;
+  background: var(--primary);
+  color: var(--accent);
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#task-form button:hover {
+  background: var(--primary-dark);
+}
+
+/* Mensagem de sucesso */
+.message {
+  margin-bottom: 15px;
+  font-weight: 700;
+  color: var(--success);
+  text-align: center;
+  font-size: 1.1rem;
+  min-height: 24px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.message.show {
+  opacity: 1;
+}
+
+/* Filtros */
+.filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 15px;
+  justify-content: center;
+}
+
+.filters button {
+  flex: 1;
+  padding: 10px 0;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  background: #ddd;
+  color: #444;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.15);
+}
+
+.filters button.active,
+.filters button:hover {
+  background: var(--primary);
+  color: var(--accent);
+  box-shadow: 0 4px 15px rgb(0 123 219 / 0.6);
+}
+
+/* Lista de tarefas */
+#task-list {
+  list-style: none;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+#task-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+#task-list::-webkit-scrollbar-thumb {
+  background-color: var(--primary);
+  border-radius: var(--radius);
+}
+
+#task-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fafafa;
+  margin-bottom: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  color: var(--dark);
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+  cursor: default;
+  transition: background 0.3s ease;
+}
+
+#task-list li.completed {
+  text-decoration: line-through;
+  background: #d4f8d4;
+  color: #3a6a3a;
+  font-weight: 600;
+}
+
+#task-list li .task-info {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#task-list li .task-info small {
+  display: block;
+  font-weight: 400;
+  color: var(--primary-dark);
+  font-size: 0.85rem;
+}
+
+#task-list li button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1.2rem;
+  margin-left: 12px;
+  padding: 4px 8px;
+  border-radius: var(--radius);
+  transition: background-color 0.2s ease;
+}
+
+#task-list li button.complete-btn {
+  color: var(--success);
+}
+
+#task-list li button.complete-btn:hover {
+  background: #c8e6c9;
+}
+
+#task-list li button.delete-btn {
+  color: var(--danger);
+}
+
+#task-list li button.delete-btn:hover {
+  background: #f5c6cb;
+}
+
+/* Footer */
+footer {
+  margin-top: 25px;
+  font-size: 0.85rem;
+  color: #555;
+  text-align: center;
+}
+
+/* Animações */
+@keyframes fadeInApp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes emojiPop {
+  0% { transform: scale(0.5); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Tela responsiva */
+@media (max-width: 440px) {
+  .app {
+    width: 100%;
+    padding: 20px;
+  }
+}
