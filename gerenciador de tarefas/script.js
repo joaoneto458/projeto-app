@@ -1,227 +1,283 @@
-// Elementos principais
-const welcomeScreen = document.getElementById("welcome");
-const appContainer = document.querySelector(".app");
-const taskForm = document.getElementById("task-form");
-const taskTitleInput = document.getElementById("task-title");
-const taskDeadlineInput = document.getElementById("task-deadline");
-const taskList = document.getElementById("task-list");
-const messageBox = document.getElementById("message");
-const filters = document.querySelectorAll(".filters button");
-const completeSound = document.getElementById("complete-sound");
+// script.js
 
-let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-let currentFilter = "all";
+// Variáveis DOM
+const splash = document.getElementById('splash');
+const container = document.getElementById('container');
 
-// Boas-vindas
-function showWelcome() {
+const loginSection = document.getElementById('loginSection');
+const registerSection = document.getElementById('registerSection');
+const appSection = document.getElementById('app');
+
+const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
+const taskForm = document.getElementById('taskForm');
+
+const loginMessage = document.getElementById('loginMessage');
+const registerMessage = document.getElementById('registerMessage');
+
+const taskList = document.getElementById('taskList');
+const logoutBtn = document.getElementById('logoutBtn');
+
+const notification = document.getElementById('notification');
+const soundSuccess = document.getElementById('soundSuccess');
+
+let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+let currentUser = null;
+
+// --- Splash 3s ---
+window.onload = () => {
+  // Após 3s remove splash e mostra login ou app
   setTimeout(() => {
-    welcomeScreen.classList.add("fade-out");
+    splash.style.animation = "fadeOut 0.6s ease forwards";
     setTimeout(() => {
-      welcomeScreen.style.display = "none";
-      appContainer.classList.remove("hidden");
-      renderTasks(currentFilter);
-      showPushNotification("Bem-vindo!", "Gerencie suas atividades com eficiência.");
-    }, 800);
+      splash.style.display = 'none';
+      checkLogged();
+      setMinDate();
+    }, 600);
   }, 3000);
+};
+
+function setMinDate() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('taskDate').setAttribute('min', today);
 }
 
-// Mensagem
-function showMessage(text, success = true) {
-  messageBox.textContent = (success ? "✅ " : "⚠️ ") + text;
-  messageBox.classList.add("show");
-  setTimeout(() => {
-    messageBox.classList.remove("show");
-  }, 3000);
+// --- Controle de telas login/cadastro/app ---
+
+document.getElementById('showRegister').addEventListener('click', e => {
+  e.preventDefault();
+  loginSection.hidden = true;
+  registerSection.hidden = false;
+  clearMessages();
+});
+
+document.getElementById('showLogin').addEventListener('click', e => {
+  e.preventDefault();
+  registerSection.hidden = true;
+  loginSection.hidden = false;
+  clearMessages();
+});
+
+function clearMessages() {
+  loginMessage.textContent = '';
+  loginMessage.classList.remove('show');
+  registerMessage.textContent = '';
+  registerMessage.classList.remove('show');
 }
 
-// Notificação push no celular
-function showPushNotification(title, body) {
-  if ("Notification" in window && Notification.permission === "granted") {
-    new Notification(title, { body });
-  } else if (Notification.permission !== "denied") {
-    Notification.requestPermission().then(permission => {
-      if (permission === "granted") {
-        new Notification(title, { body });
-      }
-    });
-  }
+function showApp() {
+  loginSection.hidden = true;
+  registerSection.hidden = true;
+  appSection.hidden = false;
+  container.style.height = 'auto';
+  renderTasks();
 }
 
-// Sugestão
-function fillSuggestion(text) {
-  taskTitleInput.value = text;
-  taskTitleInput.focus();
+function showLogin() {
+  appSection.hidden = true;
+  registerSection.hidden = true;
+  loginSection.hidden = false;
+  container.style.height = '480px';
 }
 
-// Salvar
-function saveTasks() {
-  localStorage.setItem("tasks", JSON.stringify(tasks));
+function showRegister() {
+  appSection.hidden = true;
+  loginSection.hidden = true;
+  registerSection.hidden = false;
+  container.style.height = 'auto';
 }
 
-// Renderizar tarefas
-function renderTasks(filter = "all") {
-  currentFilter = filter;
-  taskList.innerHTML = "";
-
-  filters.forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.filter === filter);
-  });
-
-  const today = new Date().toISOString().split("T")[0];
-
-  tasks.forEach(task => {
-    if (!task.completed && task.deadline < today) task.status = "pending";
-    else if (task.completed) task.status = "completed";
-    else task.status = "active";
-
-    const shouldShow =
-      filter === "all" ||
-      (filter === "completed" && task.completed) ||
-      (filter === "pending" && task.status === "pending") ||
-      (filter === "today" && task.deadline === today);
-
-    if (shouldShow) addTaskToList(task);
-  });
-
-  saveTasks();
-}
-
-// Adicionar visualmente
-function addTaskToList(task) {
-  const li = document.createElement("li");
-  li.classList.toggle("completed", task.completed);
-
-  const taskInfo = document.createElement("div");
-  taskInfo.classList.add("task-info");
-
-  const titleSpan = document.createElement("span");
-  titleSpan.textContent = task.text;
-  taskInfo.appendChild(titleSpan);
-
-  if (task.deadline) {
-    const deadlineSmall = document.createElement("small");
-    deadlineSmall.textContent = `Prazo: ${task.deadline}`;
-    taskInfo.appendChild(deadlineSmall);
-  }
-
-  li.appendChild(taskInfo);
-
-  const btnComplete = document.createElement("button");
-  btnComplete.classList.add("complete-btn");
-  btnComplete.innerHTML = "✔";
-  btnComplete.title = "Marcar como concluída";
-  btnComplete.onclick = () => toggleComplete(task.id);
-
-  const btnDelete = document.createElement("button");
-  btnDelete.classList.add("delete-btn");
-  btnDelete.innerHTML = "✖";
-  btnDelete.title = "Excluir";
-  btnDelete.onclick = () => deleteTask(task.id);
-
-  li.appendChild(btnComplete);
-  li.appendChild(btnDelete);
-  li.style.animation = "fadeInApp 0.5s ease forwards";
-
-  taskList.appendChild(li);
-}
-
-// Concluir tarefa
-function toggleComplete(id) {
-  const task = tasks.find(t => t.id === id);
-  if (!task) return;
-
-  task.completed = !task.completed;
-  task.status = task.completed ? "completed" : "active";
-
-  if (task.completed) {
-    playSuccess();
-    showMessage("Parabéns! Você concluiu sua tarefa!");
-    showPushNotification("Tarefa concluída", task.text);
-  } else {
-    showMessage("Tarefa marcada como pendente.", false);
-  }
-
-  saveTasks();
-  renderTasks(currentFilter);
-}
-
-// Deletar
-function deleteTask(id) {
-  tasks = tasks.filter(t => t.id !== id);
-  showMessage("Tarefa excluída.", false);
-  saveTasks();
-  renderTasks(currentFilter);
-}
-
-// Som de sucesso
-function playSuccess() {
-  completeSound.currentTime = 0;
-  completeSound.play();
-}
-
-// Enviar formulário
-taskForm.addEventListener("submit", e => {
+// --- Login ---
+loginForm.addEventListener('submit', e => {
   e.preventDefault();
 
-  const text = taskTitleInput.value.trim();
-  const deadline = taskDeadlineInput.value;
+  const email = loginForm.email.value.trim().toLowerCase();
+  const password = loginForm.password.value.trim();
 
-  if (!text || !deadline) {
-    showMessage("Preencha todos os campos.", false);
+  const storedUser = JSON.parse(localStorage.getItem('user'));
+
+  if (!storedUser) {
+    loginMessage.textContent = 'Nenhum usuário cadastrado. Por favor, cadastre-se primeiro.';
+    loginMessage.classList.add('show');
     return;
   }
 
-  const today = new Date().toISOString().split("T")[0];
-  if (deadline < today) {
-    showMessage("A data não pode ser no passado.", false);
-    return;
+  if (email === storedUser.email && password === storedUser.password) {
+    currentUser = storedUser;
+    localStorage.setItem('loggedIn', 'true');
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    clearMessages();
+    showApp();
+  } else {
+    loginMessage.textContent = 'E-mail ou senha incorretos.';
+    loginMessage.classList.add('show');
   }
-
-  const newTask = {
-    id: Date.now(),
-    text,
-    deadline,
-    completed: false,
-    status: "active"
-  };
-
-  tasks.push(newTask);
-  saveTasks();
-  renderTasks(currentFilter);
-  showMessage("Tarefa adicionada com sucesso!");
-  taskForm.reset();
-  animateEmoji();
 });
 
-// Emoji popup
-function animateEmoji() {
-  const emoji = document.createElement("span");
-  emoji.textContent = "🎉";
-  emoji.className = "emoji-popup";
-  document.body.appendChild(emoji);
+// --- Cadastro ---
+registerForm.addEventListener('submit', e => {
+  e.preventDefault();
 
-  const rect = taskForm.getBoundingClientRect();
-  emoji.style.left = rect.left + rect.width / 2 + "px";
-  emoji.style.top = rect.top - 30 + "px";
+  const name = registerForm.name.value.trim();
+  const email = registerForm.email.value.trim().toLowerCase();
+  const password = registerForm.password.value.trim();
+  const confirmPassword = registerForm.confirmPassword.value.trim();
 
-  emoji.animate(
-    [
-      { transform: "translateY(0) scale(1)", opacity: 1 },
-      { transform: "translateY(-50px) scale(1.5)", opacity: 0 }
-    ],
-    {
-      duration: 1500,
-      easing: "ease-out"
-    }
-  );
+  if (password !== confirmPassword) {
+    registerMessage.textContent = 'As senhas não coincidem.';
+    registerMessage.classList.add('show');
+    return;
+  }
 
-  setTimeout(() => emoji.remove(), 1500);
+  if (password.length < 6) {
+    registerMessage.textContent = 'A senha deve ter no mínimo 6 caracteres.';
+    registerMessage.classList.add('show');
+    return;
+  }
+
+  const user = { name, email, password };
+  localStorage.setItem('user', JSON.stringify(user));
+  localStorage.setItem('loggedIn', 'true');
+  localStorage.setItem('currentUser', JSON.stringify(user));
+  clearMessages();
+  showApp();
+});
+
+// --- Check login no carregamento ---
+function checkLogged() {
+  const loggedIn = localStorage.getItem('loggedIn');
+  currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+  if (loggedIn === 'true' && currentUser) {
+    showApp();
+  } else {
+    showLogin();
+  }
 }
 
-// Filtro
-filters.forEach(btn => {
-  btn.onclick = () => renderTasks(btn.dataset.filter);
+// --- Logout ---
+logoutBtn.addEventListener('click', () => {
+  localStorage.removeItem('loggedIn');
+  localStorage.removeItem('currentUser');
+  clearMessages();
+  showLogin();
 });
 
-// Inicialização
-window.addEventListener("load", showWelcome);
+// --- Tarefas ---
+// Salvar tarefas no localStorage
+function saveTasks() {
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+// Renderizar lista de tarefas
+function renderTasks() {
+  taskList.innerHTML = '';
+
+  if(tasks.length === 0) {
+    taskList.innerHTML = `<li style="text-align:center; color:#666;">Nenhuma tarefa cadastrada.</li>`;
+    return;
+  }
+
+  // Ordenar tarefas por data e hora crescente
+  tasks.sort((a,b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
+
+  tasks.forEach((task, index) => {
+    const li = document.createElement('li');
+    li.className = task.completed ? 'completed' : 'pending';
+
+    // Texto: título + data e hora formatados
+    const dateStr = new Date(task.date + 'T' + task.time).toLocaleString('pt-BR', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+
+    li.textContent = `${task.title} — ${dateStr}`;
+
+    // Botões: concluir e deletar
+    const btnComplete = document.createElement('button');
+    btnComplete.setAttribute('aria-label', 'Marcar tarefa como concluída');
+    btnComplete.innerHTML = task.completed ? '✔️' : '⭕';
+    btnComplete.title = task.completed ? 'Desmarcar tarefa' : 'Marcar como concluída';
+
+    btnComplete.addEventListener('click', () => {
+      task.completed = !task.completed;
+      saveTasks();
+      renderTasks();
+
+      if(task.completed) {
+        showNotification('Parabéns! Você concluiu a tarefa.');
+        soundSuccess.play();
+      }
+    });
+
+    const btnDelete = document.createElement('button');
+    btnDelete.setAttribute('aria-label', 'Excluir tarefa');
+    btnDelete.innerHTML = '🗑️';
+    btnDelete.title = 'Excluir tarefa';
+
+    btnDelete.addEventListener('click', () => {
+      if(confirm('Tem certeza que deseja excluir esta tarefa?')) {
+        tasks.splice(index, 1);
+        saveTasks();
+        renderTasks();
+      }
+    });
+
+    li.appendChild(btnComplete);
+    li.appendChild(btnDelete);
+
+    taskList.appendChild(li);
+  });
+}
+
+// Adicionar tarefa
+taskForm.addEventListener('submit', e => {
+  e.preventDefault();
+
+  const title = taskForm.taskTitle.value.trim();
+  const date = taskForm.taskDate.value;
+  const time = taskForm.taskTime.value;
+
+  if (!title || !date || !time) {
+    showNotification('Por favor, preencha todos os campos da tarefa.');
+    return;
+  }
+
+  // Validar se data e hora não são passadas
+  const now = new Date();
+  const taskDateTime = new Date(date + 'T' + time);
+
+  if (taskDateTime < now) {
+    showNotification('A data e hora da tarefa não podem ser anteriores ao momento atual.');
+    return;
+  }
+
+  tasks.push({
+    title,
+    date,
+    time,
+    completed: false
+  });
+
+  saveTasks();
+  renderTasks();
+
+  taskForm.reset();
+  setMinDate();
+});
+
+// --- Notificação ---
+function showNotification(msg) {
+  notification.textContent = msg;
+  notification.classList.add('show');
+
+  setTimeout(() => {
+    notification.classList.remove('show');
+  }, 3500);
+}
+
+// Atualiza o min date no formulário de tarefa
+function setMinDate() {
+  const today = new Date().toISOString().split('T')[0];
+  taskForm.taskDate.setAttribute('min', today);
+}

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Perfil - Gerenciador de Tarefas</title>
+  <style>
+    :root {
+      --primary: #007BDB;
+      --primary-dark: #005bb5;
+      --accent: #ffffff;
+      --dark: #1f1f1f;
+      --radius: 12px;
+      --shadow: 0 4px 15px rgba(0, 123, 219, 0.4);
+      --font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
+      font-family: var(--font);
+      background: linear-gradient(135deg, #4e9af1, var(--primary));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      user-select: none;
+    }
+
+    .perfil-container {
+      background: var(--accent);
+      color: var(--dark);
+      width: 360px;
+      max-width: 100%;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 30px 25px;
+      text-align: center;
+      animation: fadeInSlide 0.6s ease forwards;
+    }
+
+    .perfil-container h2 {
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 2rem;
+      margin-bottom: 25px;
+      letter-spacing: 1.3px;
+    }
+
+    .foto-preview {
+      margin-bottom: 20px;
+    }
+
+    .foto-preview img {
+      width: 110px;
+      height: 110px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 4px solid var(--primary);
+      box-shadow: 0 0 12px var(--primary-dark);
+      cursor: pointer;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .foto-preview img:hover {
+      box-shadow: 0 0 20px var(--primary-dark);
+    }
+
+    #inputFoto {
+      display: none;
+    }
+
+    form input {
+      width: 100%;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      border-radius: var(--radius);
+      border: 1.5px solid #ccc;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: border-color 0.3s ease;
+    }
+
+    form input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 6px var(--primary);
+    }
+
+    form button {
+      width: 100%;
+      padding: 16px;
+      background: var(--primary);
+      color: var(--accent);
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 700;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      letter-spacing: 1px;
+    }
+
+    form button:hover {
+      background: var(--primary-dark);
+    }
+
+    @keyframes fadeInSlide {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="perfil-container" role="main" aria-labelledby="perfilTitle">
+    <h2 id="perfilTitle">Meu Perfil</h2>
+
+    <label for="inputFoto" class="foto-preview" aria-label="Selecionar foto de perfil">
+      <img id="fotoPerfil" src="user-placeholder.png" alt="Foto de perfil" tabindex="0" />
+    </label>
+    <input type="file" id="inputFoto" accept="image/*" aria-describedby="fotoHelp" />
+
+    <form id="perfilForm" novalidate>
+      <input
+        type="text"
+        id="perfilNome"
+        name="perfilNome"
+        placeholder="Nome completo"
+        required
+        aria-required="true"
+      />
+      <input
+        type="email"
+        id="perfilEmail"
+        name="perfilEmail"
+        placeholder="E-mail"
+        required
+        aria-required="true"
+      />
+      <input
+        type="password"
+        id="perfilSenha"
+        name="perfilSenha"
+        placeholder="Nova senha (opcional)"
+      />
+      <button type="submit" aria-label="Salvar alterações do perfil">Salvar</button>
+    </form>
+  </main>
+
+  <script>
+    const fotoPerfil = document.getElementById("fotoPerfil");
+    const inputFoto = document.getElementById("inputFoto");
+    const perfilForm = document.getElementById("perfilForm");
+
+    // Carregar dados do localStorage ao iniciar
+    window.addEventListener("load", () => {
+      const userData = JSON.parse(localStorage.getItem("user")) || {};
+      perfilForm.perfilNome.value = userData.name || "";
+      perfilForm.perfilEmail.value = userData.email || "";
+      if(userData.photo) {
+        fotoPerfil.src = userData.photo;
+      }
+    });
+
+    // Preview da foto ao selecionar
+    inputFoto.addEventListener("change", () => {
+      const file = inputFoto.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        fotoPerfil.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Salvar alterações no perfil
+    perfilForm.addEventListener("submit", e => {
+      e.preventDefault();
+
+      const nome = perfilForm.perfilNome.value.trim();
+      const email = perfilForm.perfilEmail.value.trim();
+      const senha = perfilForm.perfilSenha.value.trim();
+
+      if (!nome || !email) {
+        alert("Nome e e-mail são obrigatórios.");
+        return;
+      }
+
+      const userData = JSON.parse(localStorage.getItem("user")) || {};
+      userData.name = nome;
+      userData.email = email;
+      if (senha.length >= 6) {
+        userData.password = senha;
+      }
+      userData.photo = fotoPerfil.src;
+
+      localStorage.setItem("user", JSON.stringify(userData));
+
+      alert("Perfil atualizado com sucesso!");
+      perfilForm.perfilSenha.value = ""; // limpa senha no formulário
+    });
+  </script>
+</body>
+</html>

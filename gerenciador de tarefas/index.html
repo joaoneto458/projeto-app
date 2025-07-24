@@ -3,59 +3,55 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gerenciador de Tarefas</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Gerenciador de Tarefas - Seja Bem-vindo</title>
+  <style>
+    /* Reset básico */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
+      background: linear-gradient(135deg, #4e9af1, #007BDB);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none;
+      color: white;
+      flex-direction: column;
+    }
+
+    .logo {
+      width: 180px;
+      height: 180px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px #005bb5);
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      text-shadow: 0 0 8px #003d7a;
+    }
+  </style>
 </head>
 <body>
-  <!-- Tela de boas-vindas -->
-  <div id="welcome" class="welcome fade-in">
-    <img src="img/logo.png.jpg" alt="Logo" class="logo" />
-    <h1>Seja bem-vindo ao nosso Gerenciador de Atividades!</h1>
-  </div>
+  <img src="img/logo.png.jpg" alt="Logo do Gerenciador de Tarefas" class="logo" />
+  <h1>Seja bem-vindo!</h1>
 
-  <!-- Conteúdo principal -->
-  <div class="app hidden">
-    <header>
-      <img src="img/logo.png.jpg" alt="Logo" id="logo" />
-      <h1>Gerenciador de Tarefas</h1>
-    </header>
-
-    <main>
-      <section class="task-panel">
-        <h2>Adicionar nova tarefa</h2>
-
-        <div class="suggestions">
-          <button onclick="fillSuggestion('Treinar 🏋️')">Treinar 🏋️</button>
-          <button onclick="fillSuggestion('Estudar 📚')">Estudar 📚</button>
-          <button onclick="fillSuggestion('Trabalhar 💻')">Trabalhar 💻</button>
-          <button onclick="fillSuggestion('Ler 📖')">Ler 📖</button>
-        </div>
-
-        <form id="task-form">
-          <input type="text" id="task-title" placeholder="Título da tarefa" required />
-          <input type="date" id="task-deadline" required />
-          <button type="submit">Adicionar Tarefa</button>
-        </form>
-
-        <div id="message" class="message"></div>
-
-        <div class="filters">
-          <button data-filter="all" class="active">Todas</button>
-          <button data-filter="today">Do Dia</button>
-          <button data-filter="pending">Pendentes</button>
-          <button data-filter="completed">Concluídas</button>
-        </div>
-
-        <ul id="task-list"></ul>
-      </section>
-    </main>
-
-    <footer>
-      <p>&copy; 2025 - João Acácio | Gerenciador de Tarefas</p>
-    </footer>
-  </div>
-
-  <audio id="complete-sound" src="audio/sucesso.mp3" preload="auto"></audio>
-  <script src="script.js"></script>
+  <script>
+    setTimeout(() => {
+      const loggedIn = localStorage.getItem('loggedIn') === 'true';
+      if (loggedIn) {
+        window.location.href = 'app.html';
+      } else {
+        window.location.href = 'login.html';
+      }
+    }, 3000);
+  </script>
 </body>
 </html>

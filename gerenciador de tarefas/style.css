@@ -29,7 +29,6 @@ body {
   align-items: flex-start;
 }
 
-/* Tela de boas-vindas */
 #welcome {
   position: fixed;
   inset: 0;
@@ -61,12 +60,11 @@ body {
   text-align: center;
 }
 
-/* App container */
 .app {
   background: var(--accent);
   color: var(--dark);
   border-radius: var(--radius);
-  width: 380px;
+  width: 420px;
   max-width: 100%;
   padding: 25px;
   box-shadow: var(--shadow);
@@ -77,7 +75,6 @@ body {
   display: none;
 }
 
-/* Header */
 header {
   display: flex;
   align-items: center;
@@ -98,7 +95,6 @@ header h1 {
   font-size: 1.8rem;
 }
 
-/* Task Panel */
 .task-panel h2 {
   font-weight: 700;
   margin-bottom: 15px;
@@ -106,7 +102,6 @@ header h1 {
   font-size: 1.5rem;
 }
 
-/* Sugestões */
 .suggestions {
   display: flex;
   gap: 10px;
@@ -132,26 +127,28 @@ header h1 {
   background: var(--primary-dark);
 }
 
-/* Formulário */
 #task-form {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 20px;
 }
 
 #task-form input[type="text"],
-#task-form input[type="date"] {
+#task-form input[type="date"],
+#task-form input[type="time"] {
   padding: 10px 14px;
   font-size: 1rem;
   border-radius: var(--radius);
   border: 1.5px solid #ccc;
   transition: border-color 0.3s ease;
   font-weight: 500;
+  flex: 1 1 120px;
 }
 
 #task-form input[type="text"]:focus,
-#task-form input[type="date"]:focus {
+#task-form input[type="date"]:focus,
+#task-form input[type="time"]:focus {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 5px var(--primary);
@@ -167,6 +164,7 @@ header h1 {
   font-size: 1.1rem;
   cursor: pointer;
   transition: background 0.3s ease;
+  flex: 1 1 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -176,7 +174,6 @@ header h1 {
   background: var(--primary-dark);
 }
 
-/* Mensagem de sucesso */
 .message {
   margin-bottom: 15px;
   font-weight: 700;
@@ -192,7 +189,6 @@ header h1 {
   opacity: 1;
 }
 
-/* Filtros */
 .filters {
   display: flex;
   gap: 12px;
@@ -221,7 +217,6 @@ header h1 {
   box-shadow: 0 4px 15px rgb(0 123 219 / 0.6);
 }
 
-/* Lista de tarefas */
 #task-list {
   list-style: none;
   max-height: 320px;
@@ -266,6 +261,8 @@ header h1 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: flex;
+  flex-direction: column;
 }
 
 #task-list li .task-info small {
@@ -273,6 +270,7 @@ header h1 {
   font-weight: 400;
   color: var(--primary-dark);
   font-size: 0.85rem;
+  margin-top: 4px;
 }
 
 #task-list li button {
@@ -302,7 +300,6 @@ header h1 {
   background: #f5c6cb;
 }
 
-/* Footer */
 footer {
   margin-top: 25px;
   font-size: 0.85rem;
@@ -310,22 +307,42 @@ footer {
   text-align: center;
 }
 
-/* Animações */
 @keyframes fadeInApp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes emojiPop {
-  0% { transform: scale(0.5); opacity: 0; }
-  50% { transform: scale(1.2); opacity: 1; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
-/* Tela responsiva */
 @media (max-width: 440px) {
   .app {
     width: 100%;
     padding: 20px;
+  }
+
+  #task-form input[type="text"],
+  #task-form input[type="date"],
+  #task-form input[type="time"],
+  #task-form button {
+    flex: 1 1 100%;
   }
 }

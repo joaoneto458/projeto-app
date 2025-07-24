@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gerenciador de Tarefas</title>
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+  <header>
+    <img src="img/logo.png.jpg" alt="Logo Gerenciador de Tarefas" class="logo" />
+    <h1>Gerenciador de Tarefas</h1>
+    <button id="logoutBtn" aria-label="Sair do aplicativo" title="Sair">Sair</button>
+  </header>
+
+  <section id="profileSection" aria-label="Perfil do Usuário" hidden>
+    <h2>Perfil do Usuário</h2>
+    <div class="profile-photo-container">
+      <img id="profilePhoto" src="img/logo.png.jpg" alt="Foto do usuário" />
+      <input type="file" id="photoInput" accept="image/*" aria-label="Alterar foto do perfil" />
+    </div>
+    <p id="profileName"></p>
+    <button id="backToAppBtn" aria-label="Voltar ao gerenciador de tarefas">Voltar</button>
+  </section>
+
+  <main id="appSection" aria-label="Gerenciador de Tarefas">
+    <h2>Suas tarefas</h2>
+
+    <form id="taskForm" aria-label="Adicionar nova tarefa">
+      <input type="text" name="taskTitle" id="taskTitle" placeholder="Nova tarefa..." required aria-required="true" autocomplete="off" />
+      <input type="date" name="taskDate" id="taskDate" required aria-required="true" />
+      <input type="time" name="taskTime" id="taskTime" required aria-required="true" />
+      <button type="submit" aria-label="Adicionar tarefa">Adicionar</button>
+    </form>
+
+    <div id="quickSuggestions">
+      <h3>Sugestões rápidas</h3>
+      <button type="button" class="quick-btn">Ir para academia</button>
+      <button type="button" class="quick-btn">Estudar</button>
+      <button type="button" class="quick-btn">Fazer compras</button>
+      <button type="button" class="quick-btn">Lavar roupa</button>
+    </div>
+
+    <ul id="taskList" aria-live="polite" aria-label="Lista de tarefas">
+      <!-- Tarefas renderizadas aqui -->
+    </ul>
+
+    <div id="notification" role="alert" aria-live="assertive" class="notification"></div>
+
+    <button id="openProfileBtn" aria-label="Abrir perfil do usuário" title="Perfil">Perfil</button>
+  </main>
+
+  <audio id="soundSuccess" src="audio/success.mp3" preload="auto"></audio>
+
+  <script src="app.js"></script>
+</body>
+</html>
